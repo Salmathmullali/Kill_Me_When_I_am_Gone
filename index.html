@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Auto-Deactivation Settings</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+    --line:#e5e7eb; --primary:#2563eb; --primary-quiet:#dbeafe;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    background:var(--bg); color:var(--text);
+    display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;
+  }
+  .wrap{width:min(880px,100%); display:grid; gap:16px}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:0 8px 24px rgba(31,41,55,.06);
+    overflow:hidden;
+  }
+  .card h2{
+    margin:0; padding:16px 20px; font-size:18px; font-weight:700;
+    border-bottom:1px solid var(--line); background:#fff;
+  }
+  .section{padding:18px 20px; display:grid; gap:14px}
+  .row{display:flex; gap:10px; align-items:flex-start}
+  .row input[type="radio"], .row input[type="checkbox"]{margin-top:4px; accent-color:var(--primary)}
+  .help{display:block; color:var(--muted); font-size:13px; margin-top:4px}
+  .indent{padding-left:32px}
+  select, input[type="email"], input[type="text"]{
+    border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:#fff; color:var(--text);
+  }
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  .note{
+    background:var(--primary-quiet); border:1px solid #bfdbfe; color:#1e40af;
+    padding:10px 12px; border-radius:12px; font-size:14px;
+  }
+  .footer{
+    display:flex; justify-content:flex-end; gap:10px; padding:14px 20px; border-top:1px solid var(--line); background:#fff
+  }
+  button{
+    border:0; border-radius:12px; padding:10px 14px; cursor:pointer; font-weight:600;
+  }
+  .btn-secondary{background:#eef2ff; color:#3730a3}
+  .btn-primary{background:var(--primary); color:#fff}
+  @media (max-width:640px){
+    .grid2{grid-template-columns:1fr}
+  }
+  /* Disabled look */
+  .disabled{opacity:.6; pointer-events:none}
+</style>
+</head>
+<body>
+  <main class="wrap">
+
+    <!-- Delete App -->
+    <section class="card" id="delete-card">
+      <h2>Delete App</h2>
+      <div class="section">
+        <label class="row">
+          <input type="radio" name="delete" value="now" checked />
+          <span>
+            <strong>Delete now</strong>
+            <small class="help">Your account will be deleted permanently. You can contact us within 30 days to restore it.</small>
+          </span>
+        </label>
+
+        <label class="row">
+          <input type="radio" name="delete" value="later" />
+          <span><strong>Delete after selected time</strong></span>
+        </label>
+
+        <div class="indent" id="delete-period">
+          <label for="delPeriod" class="help" style="margin:0 0 6px 0">Select Inactivity Period:</label>
+          <select id="delPeriod" aria-label="Deletion inactivity period">
+            <option>1 month</option>
+            <option selected>3 months</option>
+            <option>6 months</option>
+            <option>12 months</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Auto-Deactivation Settings -->
+    <section class="card" id="auto-card">
+      <h2>Auto-Deactivation Settings</h2>
+      <div class="section">
+        <label class="row">
+          <input type="radio" name="deact" value="immediate" />
+          <span><strong>Deactivate account immediately (even if active)</strong></span>
+        </label>
+
+        <label class="row">
+          <input type="radio" name="deact" value="inactive" checked />
+          <span><strong>Deactivate after continuous inactivity in selected period</strong></span>
+        </label>
+
+        <div class="indent" id="inactive-period">
+          <label for="inactPeriod" class="help" style="margin:0 0 6px 0">Inactivity Period:</label>
+          <select id="inactPeriod" aria-label="Auto-deactivation inactivity period">
+            <option>1 month</option>
+            <option selected>3 months</option>
+            <option>6 months</option>
+            <option>12 months</option>
+          </select>
+        </div>
+
+        <label class="row">
+          <input type="radio" name="deact" value="trusted" />
+          <span>
+            <strong>Allow trusted person access after inactivity</strong>
+            <small class="help">Add a contact who can request access if your account becomes inactive.</small>
+          </span>
+        </label>
+
+        <div class="indent grid2" id="trusted-block">
+          <div>
+            <label class="help" for="trustedEmail" style="margin:0 0 6px 0">Trusted contact email</label>
+            <input id="trustedEmail" type="email" placeholder="name@example.com" />
+          </div>
+          <div>
+            <label class="help" for="verification" style="margin:0 0 6px 0">Verification note (optional)</label>
+            <input id="verification" type="text" placeholder="e.g., must provide proof" />
+          </div>
+        </div>
+        <div class="note">You’ll always receive a reminder before any deactivation or deletion happens.</div>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="card">
+      <h2>Notification Settings</h2>
+      <div class="section">
+        <label class="row">
+          <input type="checkbox" id="notify" checked />
+          <span><strong>Notify before deactivation</strong></span>
+        </label>
+        <div class="indent" id="reminder-row">
+          <label for="reminder" class="help" style="margin:0 0 6px 0">Send reminder email:</label>
+          <select id="reminder" aria-label="Reminder timing">
+            <option>7 days before</option>
+            <option>15 days before</option>
+            <option selected>30 days before</option>
+          </select>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn-secondary" type="button">Cancel</button>
+        <button class="btn-primary" type="button">Save Changes 💾</button>
+      </div>
+    </section>
+
+  </main>
+
+<script>
+  // Small interactivity to match the UX expectations.
+  const delRadios = document.querySelectorAll('input[name="delete"]');
+  const delPeriod = document.getElementById('delete-period');
+
+  const deactRadios = document.querySelectorAll('input[name="deact"]');
+  const inactivePeriod = document.getElementById('inactive-period');
+  const trustedBlock = document.getElementById('trusted-block');
+
+  const notify = document.getElementById('notify');
+  const reminderRow = document.getElementById('reminder-row');
+
+  function refreshState(){
+    // Delete period only enabled if "later"
+    const delLater = [...delRadios].find(r=>r.checked)?.value === 'later';
+    delPeriod.classList.toggle('disabled', !delLater);
+
+    // Inactivity period only enabled for "inactive"
+    const deact = [...deactRadios].find(r=>r.checked)?.value;
+    inactivePeriod.classList.toggle('disabled', deact !== 'inactive');
+    trustedBlock.classList.toggle('disabled', deact !== 'trusted');
+
+    // Reminder enabled only if notify checked
+    reminderRow.classList.toggle('disabled', !notify.checked);
+  }
+
+  delRadios.forEach(r=>r.addEventListener('change', refreshState));
+  deactRadios.forEach(r=>r.addEventListener('change', refreshState));
+  notify.addEventListener('change', refreshState);
+
+  // Initial
+  refreshState();
+</script>
+</body>
+</html>
